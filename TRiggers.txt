@@ -1,0 +1,12 @@
+create trigger payment_trigger
+    before insert on payment
+    for each row
+    begin
+       if (:new.pay_date is NULL and :new.pay_time is NULL) then
+                :new.pay_status :='Payment Bending';
+       end if;
+    end;
+    /
+
+insert into payment(pay_no,price,bill_no,cus_id)
+ values(510,230,104,302);

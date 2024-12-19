@@ -1,0 +1,367 @@
+			Ex -5   Implementation of Joins 
+		   ---------------------------------------
+_____________________________________________________________________________________
+
+1) Natural join
+--------------------------------------------------------------------------------------
+
+SQL> select * from customer;
+
+    CUS_ID CUS_NAME     CITY       PIN_CODE    BILL_NO
+---------- ----------- ----------- ---------- ----------
+       301 orange                         madurai                  623451        101
+       302 white                          chennai                  723451        102
+       303 alim                           libiya                   823451        103
+       304 sushmitha                      chennai                  323451        104
+       305 sita                           chennai                  623451        105
+
+SQL> select * from ordertable;
+
+  ORDER_ID ORDER_DATE           ORDER_TIME               CUS_ID    BILL_NO
+---------- -------------------- -------------------- ---------- ----------
+       401 12/03/2023           5.00                        301        101
+       402 23/03/2023           4.00 pm                     301        102
+       403 11/06/2023           8.00 pm                     303        103
+       404 11/06/2023           8.00 am                     304        104
+       405 21/05/2023           9.00 am                     305        105
+
+SQL> select * from customer natural join Ordertable;
+
+    CUS_ID    BILL_NO CUS_NAME     CITY         PIN_CODE   ORDER_ID ORDER_DATE   ORDER_TIME
+---------- ---------- ----------- ------------ --------- ---------- ----------- ------------
+       301        101 orange        madurai    623451        401 12/03/2023      5.00 pm
+       303        103 alim          libiya     823451        403 11/06/2023      8.00 pm
+       304        104 sushmitha     chennai    323451        404 11/06/2023      8.00 am
+       305        105 sita          chennai    623451        405 21/05/2023      9.00 am
+____________________________________________________________________________________________________
+
+2) Cross join
+----------------------------------------------------------------------------------------------------
+
+SQL> select *from customer cross join cus_contact;
+
+    CUS_ID CUS_NAME   CITY                   PIN_CODE    BILL_NO  COS_MOBNO     CUS_ID
+---------- ---------  --------------        ---------- ---------- ---------- ----------
+       301 orange     madurai                  623451        101 9842441124        301
+       301 orange     madurai                  623451        101 9095365367        302
+       301 orange     madurai                  623451        101 9095365368        303
+       301 orange     madurai                  623451        101 9056387346        304
+       301 orange     madurai                  623451        101 7845823969        305
+       302 white      chennai                  723451        102 9842441124        301
+       302 white      chennai                  723451        102 9095365367        302
+       302 white      chennai                  723451        102 9095365368        303
+       302 white      chennai                  723451        102 9056387346        304
+       302 white      chennai                  723451        102 7845823969        305
+       303 alim       libiya                   823451        103 9842441124        301
+
+    CUS_ID CUS_NAME      CITY                   PIN_CODE    BILL_NO  COS_MOBNO     CUS_ID
+---------- ----------- --------------          ---------- ---------- ---------- ----------
+       303 alim        libiya                   823451        103 9095365367        302
+       303 alim        libiya                   823451        103 9095365368        303
+       303 alim        libiya                   823451        103 9056387346        304
+       303 alim        libiya                   823451        103 7845823969        305
+       304 sushmitha   chennai                  323451        104 9842441124        301
+       304 sushmitha   chennai                  323451        104 9095365367        302
+       304 sushmitha   chennai                  323451        104 9095365368        303
+       304 sushmitha   chennai                  323451        104 9056387346        304
+       304 sushmitha   chennai                  323451        104 7845823969        305
+       305 sita        chennai                  623451        105 9842441124        301
+       305 sita        chennai                  623451        105 9095365367        302
+
+    CUS_ID CUS_NAME      CITY                   PIN_CODE    BILL_NO  COS_MOBNO     CUS_ID
+---------- ------------ -------------------- ---------- ---------- ---------- ----------
+       305 sita          chennai                  623451        105 9095365368        303
+       305 sita          chennai                  623451        105 9056387346        304
+       305 sita          chennai                  623451        105 7845823969        305
+
+25 rows selected.
+
+____________________________________________________________________________________________________
+
+3) Left Outer join
+----------------------------------------------------------------------------------------------------
+
+SQL> select * from customer left outer join ordertable  on customer.cus_id=ordertable.cus_id;
+
+    CUS_ID CUS_NAME                       CITY                   PIN_CODE    BILL_NO   ORDER_ID ORDER_DATE           ORDER_TIME               CUS_ID    BILL_NO
+---------- ------------------------------ --------------- ---------- ---------- ---------- --------------- -------------------- ---------- ----------
+       301 orange                         madurai                  623451        101        401 12/03/2023           5.00                        301        101
+       301 orange                         madurai                  623451        101        402 23/03/2023           4.00 pm                     301        102
+       303 alim                           libiya                   823451        103        403 11/06/2023           8.00 pm                     303        103
+       304 sushmitha                      chennai                  323451        104        404 11/06/2023           8.00 am                     304        104
+       305 sita                           chennai                  623451        105        405 21/05/2023           9.00 am                     305        105
+       302 white                          chennai                  723451        102
+
+6 rows selected.
+
+SQL> select customer.cus_id,cus_name,order_id,order_date,ordertable.bill_no from customer left outer join ordertable  on customer.cus_id=ordertable.cus_id;
+
+    CUS_ID CUS_NAME                         ORDER_ID ORDER_DATE              BILL_NO
+---------- ------------------------------ ---------- -------------------- ----------
+       301 orange                                401 12/03/2023                  101
+       301 orange                                402 23/03/2023                  102
+       303 alim                                  403 11/06/2023                  103
+       304 sushmitha                             404 11/06/2023                  104
+       305 sita                                  405 21/05/2023                  105
+       302 white
+
+____________________________________________________________________________________________________________________________________________________
+
+4)Right Outer join
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+SQL> select customer.cus_id,cus_name,order_id,order_date,ordertable.bill_no from customer right outer join ordertable where cus_id>300 on customer.cus_id=ordertable.cus_id;
+
+    CUS_ID CUS_NAME                         ORDER_ID ORDER_DATE              BILL_NO
+---------- ------------------------------ ---------- -------------------- ----------
+       301 orange                                401 12/03/2023                  101
+       301 orange                                402 23/03/2023                  102
+       303 alim                                  403 11/06/2023                  103
+       304 sushmitha                             404 11/06/2023                  104
+       305 sita                                  405 21/05/2023                  105
+__________________________________________________________________________________________________________________________________________________________
+
+5) Full Outer join
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+SQL> select payment.pay_no,payment.pay_date,payment.pay_status,bill.tot_amt from payment full outer join bill using(bill_no);
+
+    PAY_NO PAY_DATE             PAY_STATUS              TOT_AMT
+---------- -------------------- -------------------- ----------
+       501 21/05/2023           paid                        300
+       502 13/04/2023            not paid                   850
+       503 21/04/2023            not paid                   350
+       504 22/04/2023            paid                      1050
+       505 23/04/2023            paid                       850
+       506 21/05/2023           paid                        300
+       507 21/05/2023           paid                        300
+       508 21/05/2023           paid                        300
+       509 21/05/2023           paid                        300
+                                                           1000
+___________________________________________________________________________________________________________________________________________________________
+
+6) Set operations : UNION
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL>  select cus_name from customer union select staff_name from stafftable ;
+
+CUS_NAME
+------------------------------
+orange
+white
+alim
+sushmitha
+sita
+keshini.B
+pragadees.B
+susa
+dhiyeah
+swathi
+
+10 rows selected.
+
+___________________________________________________________________________________________________________________________________________________________
+
+7) Set operations : INTERSECT
+
+SQL> select * from stafftable;
+
+  STAFF_ID STAFF_NAME           STAFF_MAIL                               STAFF_DOB   STAFF_AGE CITY                   PIN_CODE
+---------- -------------------- ---------------------------------------- ---------- ---------- -------------------- ----------
+         1 keshini              keshini@gmail.com                        17/10/2003         18 madurai                  625012
+         2 pragadees.B          praga@gmail.com                          16/11/2006         15 madurai                  625013
+         3 susa                 susa@gmail.com                           28/02/2004         20 chennai                  625123
+         4 dhiyeah              dhiya@gmail.com                          01/07/1998         22 trichy                   625123
+         5 swathi               swathi@gmail.com                         23/05/1948         32 bangalore                825123
+
+
+SQL> select * from customer;
+
+    CUS_ID CUS_NAME                       CITY                   PIN_CODE    BILL_NO
+---------- ------------------------------ -------------------- ---------- ----------
+       301 orange                         madurai                  623451        101
+       302 white                          chennai                  723451        102
+       303 alim                           libiya                   823451        103
+       304 sushmitha                      chennai                  323451        104
+       305 sita                           chennai                  623451        105
+       306 swathi                         bangalore                825123        106
+       307 keshini                        bangalore                825123        107
+
+7 rows selected.
+
+SQL> select cus_name from customer intersect select staff_name from stafftable order by cus_name;
+
+CUS_NAME
+------------------------------
+keshini
+swathi
+
+_______________________________________________________________________________________________________________________________________________________
+
+8) set operation : Difference
+
+SQL> select * from customer;
+
+    CUS_ID CUS_NAME                       CITY                   PIN_CODE    BILL_NO
+---------- ------------------------------ -------------------- ---------- ----------
+       301 orange                         madurai                  623451        101
+       302 white                          chennai                  723451        102
+       303 alim                           libiya                   823451        103
+       304 sushmitha                      chennai                  323451        104
+       305 sita                           chennai                  623451        105
+       306 swathi                         bangalore                825123        106
+       307 keshini                        bangalore                825123        107
+
+7 rows selected.
+
+SQL> select * from ordertable;
+
+  ORDER_ID ORDER_DATE           ORDER_TIME               CUS_ID    BILL_NO
+---------- -------------------- -------------------- ---------- ----------
+       401 12/03/2023           5.00                        301        101
+       402 23/03/2023           4.00 pm                     301        102
+       403 11/06/2023           8.00 pm                     303        103
+       404 11/06/2023           8.00 am                     304        104
+       405 21/05/2023           9.00 am                     305        105
+
+
+SQL>  select cus_id from customer minus  select cus_id from ordertable;
+
+    CUS_ID
+----------
+       302
+       306
+       307
+_______________________________________________________________________________________________________________________________________________________
+
+9) Using order by clause
+
+select * from item;
+
+    ITEMID      PRICE QUANTITY
+---------- ---------- ----------
+       101        600 3kg
+       102        300 1kg
+       103        700 2kg
+       104        350 10kg
+       105        450 5kg
+       106        350 2kg
+       107       2000 10kg
+       108       2300 12kg
+
+8 rows selected.
+
+SQL> select * from prepare;
+
+   STAFFID     ITEMID PREPTIME
+---------- ---------- ----------
+         1        101 2.30am
+         2        102 5.30pm
+         3        103 4.30pm
+         4        104 1.00pm
+         5        105 8.00pm
+         1        101 10.30am
+         2        101 10.30am
+         3        101 10.30am
+         4        101 10.30am
+         5        101 10.30am
+         5        104 5.30am
+
+   STAFFID     ITEMID PREPTIME
+---------- ---------- ----------
+         2        104 6.30am
+
+12 rows selected.
+
+
+
+
+
+SQL> select * from prepare right outer join item on prepare.itemid=item.itemid order by prepare.itemid,prepare.staffid;
+
+   STAFFID     ITEMID PREPTIME       ITEMID      PRICE QUANTITY                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+---------- ---------- ---------- ---------- ---------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+         1        101 2.30am            101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         1        101 10.30am           101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         2        101 10.30am           101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         3        101 10.30am           101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         4        101 10.30am           101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         5        101 10.30am           101        600 3kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         2        102 5.30pm            102        300 1kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         3        103 4.30pm            103        700 2kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+         2        104 6.30am            104        350 10kg                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+         4        104 1.00pm            104        350 10kg                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+         5        104 5.30am            104        350 10kg                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+   STAFFID     ITEMID PREPTIME       ITEMID      PRICE QUANTITY                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+---------- ---------- ---------- ---------- ---------- ----------                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+         5        105 8.00pm            105        450 5kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                        106        350 2kg                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                        107       2000 10kg                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                        108       2300 12kg                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+
+15 rows selected.
+
+___________________________________________________________________________________________________________________________________
+
+10) Using like 
+
+SQL> select customer.cus_name ,ordertable.cus_id
+  2  from customer
+  3  inner join ordertable on customer.cus_id=ordertable.cus_id
+  4  where customer.cus_name like 's%';
+
+CUS_NAME                           CUS_ID
+------------------------------ ----------
+sushmitha                             304
+sita                                  305
+
+___________________________________________________________________________________________________________________________________
+ 
+11) Using Group by clause
+
+
+SQL> select customer.cus_name,COUNT( ordertable.cus_id)
+  2  from customer
+  3  inner join ordertable on customer.cus_id = ordertable.cus_id
+  4  group by customer.cus_name;
+
+CUS_NAME                       COUNT(ORDERTABLE.CUS_ID)
+------------------------------ ------------------------
+orange                                                2
+alim                                                  1
+sushmitha                                             1
+sita                                                  1
+
+_____________________________________________________________________________________________________________________________________
+
+12) using AND 
+
+SQL> select customer.cus_name,ordertable.cus_id
+  2  from customer
+  3  inner join ordertable on customer.cus_id=ordertable.cus_id
+  4  where customer.city='chennai' AND ordertable.cus_id>300;
+
+CUS_NAME                           CUS_ID
+------------------------------ ----------
+sushmitha                             304
+sita                                  305
+_______________________________________________________________________________________________________________________________________
+
+13) using OR
+
+
+SQL> select customer.cus_name,ordertable.cus_id
+  2  from customer
+  3  inner join ordertable on customer.cus_id=ordertable.cus_id
+  4  where customer.city='chennai' OR ordertable.cus_id>300;
+
+CUS_NAME                           CUS_ID
+------------------------------ ----------
+orange                                301
+orange                                301
+alim                                  303
+sushmitha                             304
+sita                                  305
+
+
+_______________________________________________________________________________________________________________________________________

@@ -1,0 +1,162 @@
+				Ex-4 Implementation of Nested Queries 
+
+1)Display the details of the item which are not ordered 
+
+SQL>  select * from item where item_id not in (select item_id from has );
+
+   ITEM_ID PRICE                QUANTITY
+---------- -------------------- ------------------------------
+        14 100                  1 kg
+        15 350                  2 kg
+        13 400                  1 kg
+
+SQL> select * from has;
+
+  ORDER_ID    ITEM_ID
+---------- ----------
+       401         11
+       402         12
+       404         11
+       405         11
+
+SQL> select * from ordertable;
+
+  ORDER_ID ORDER_DATE           ORDER_TIME               CUS_ID    BILL_NO
+---------- -------------------- -------------------- ---------- ----------
+       401 12/03/2023           5.00                        301        101
+       402 23/03/2023           4.00 pm                     301        102
+       403 11/06/2023           8.00 pm                     303        104
+       404 06/10/2023           8.00 am                     305        103
+       405 21/05/2023           9.00 am                     304        105
+
+SQL> select * from item;
+
+   ITEM_ID PRICE                QUANTITY
+---------- -------------------- ------------------------------
+        11 1000                 1 kg
+        12 200                  2 kg
+        13 400                  1 kg
+        14 100                  1 kg
+        15 350                  2 kg
+
+___________________________________________________________________________________________
+
+2)Display the customer details who has paid more than 5 times 
+
+SQL> select * from payment;
+
+    PAY_NO PAY_DATE             PAY_TIME                       PAY_STATUS                PRICE    BILL_NO     CUS_ID
+---------- -------------------- ------------------------------ -------------------- ---------- ---------- ----------
+       501 21/05/2023           9.00 am                        paid                       1000        105        301
+       502 13/04/2023           11.00 am                        not paid                  1500        104        302
+       503 21/04/2023           5.00 am                         not paid                   800        102        303
+       504 22/04/2023           2.00 pm                         paid                      1800        103        305
+       505 23/04/2023           5.00 pm                         paid                       300        104        301
+       506 21/05/2023           9.00 am                        paid                       1000        105        301
+       507 21/05/2023           9.00 am                        paid                       1000        105        301
+       508 21/05/2023           9.00 am                        paid                       1000        105        301
+       509 21/05/2023           9.00 am                        paid                       1000        105        301
+
+9 rows selected.
+
+SQL> select * from customer where cus_id in (select cus_id from (select cus_id ,count(cus_id) as number_count from payment group by cus_id) where number_count >5 );
+
+select*
+
+    CUS_ID CUS_NAME                       CITY                   PIN_CODE    BILL_NO
+---------- ------------------------------ -------------------- ---------- ----------
+       301 orange                         madurai                  623451        101
+
+____________________________________________________________________________________________________________
+
+3)Display the bill details where payment is pending 
+
+SQL> select * from bill;
+
+   BILL_NO BILL_TYPE            BILL_DATE               TOT_AMT     PAY_NO                                                                            
+---------- -------------------- -------------------- ---------- ----------                                                                            
+       101 single bill          12/10/2022                 1000        121                                                                            
+       102 single bill          23/04/2023                  350        122                                                                            
+       103 double bill          14/05/2023                 1050        123                                                                            
+       104 double bill          30/09/2023                  850        124                                                                            
+       105 double bill          11/09/2023                  300        125                                                                            
+
+SQL> select * from payment;
+
+    PAY_NO PAY_DATE             PAY_TIME                       PAY_STATUS                PRICE    BILL_NO     CUS_ID                                  
+---------- -------------------- ------------------------------ -------------------- ---------- ---------- ----------                                  
+       501 21/05/2023           9.00 am                        paid                       1000        105        301                                  
+       502 13/04/2023           11.00 am                        not paid                  1500        104        302                                  
+       503 21/04/2023           5.00 am                         not paid                   800        102        303                                  
+       504 22/04/2023           2.00 pm                         paid                      1800        103        305                                  
+       505 23/04/2023           5.00 pm                         paid                       300        104        301                                  
+       506 21/05/2023           9.00 am                        paid                       1000        105        301                                  
+       507 21/05/2023           9.00 am                        paid                       1000        105        301                                  
+       508 21/05/2023           9.00 am                        paid                       1000        105        301                                  
+       509 21/05/2023           9.00 am                        paid                       1000        105        301                                  
+
+9 rows selected.
+
+SQL> select * from bill where pay_no in (select pay_no from payment where pay_status =' not paid');
+
+   BILL_NO BILL_TYPE            BILL_DATE               TOT_AMT     PAY_NO                                                                            
+---------- -------------------- -------------------- ---------- ----------                                                                            
+       102 single bill          23/04/2023                  350        502                                                                            
+       103 double bill          14/05/2023                 1050        503         
+
+_____________________________________________________________________________________________________________________
+
+4)Display the staff details whose age is greater than 30 
+
+SQL> select * from stafftable;
+
+  STAFF_ID STAFF_NAME           STAFF_MAIL                               STAFF_DOB   STAFF_AGE CITY                   PIN_CODE                        
+---------- -------------------- ---------------------------------------- ---------- ---------- -------------------- ----------                        
+         1 keshini.B            keshini@gmail.com                        17/10/2003         18 madurai                  625012                        
+         2 pragadees.B          praga@gmail.com                          16/11/2006         15 madurai                  625013                        
+         3 susa                 susa@gmail.com                           28/02/2004         20 chennai                  625123                        
+         4 dhiyeah              dhiya@gmail.com                          01/07/1998         22 trichy                   625123                        
+         5 swathi               swathi@gmail.com                         23/05/1948         32 bangalore                825123                        
+
+SQL> select * from stafftable where staff_id in (select staff_id from stafftable where staff_age>30);
+
+  STAFF_ID STAFF_NAME           STAFF_MAIL                               STAFF_DOB   STAFF_AGE CITY                   PIN_CODE
+---------- -------------------- ---------------------------------------- ---------- ---------- -------------------- ----------
+         5 swathi               swathi@gmail.com                         23/05/1948         32 bangalore                825123
+
+________________________________________________________________________________________________________________________________________
+
+5)Display the bill details which are paid atleast one month before
+
+
+________________________________________________________________________________________________________________________________________
+
+6)Display the customer details who has placed Order on 2/10/2023
+
+SQL> select * from customer where bill_no in(select bill_no from ordertable where order_date='21/05/2023');
+
+    CUS_ID CUS_NAME                       CITY                   PIN_CODE    BILL_NO
+---------- ------------------------------ -------------------- ---------- ----------
+       305 sita                           chennai                  623451        105
+
+SQL> select * from ordertable;
+
+  ORDER_ID ORDER_DATE           ORDER_TIME               CUS_ID    BILL_NO
+---------- -------------------- -------------------- ---------- ----------
+       401 12/03/2023           5.00                        301        101
+       402 23/03/2023           4.00 pm                     301        102
+       403 11/06/2023           8.00 pm                     303        104
+       404 11/06/2023           8.00 am                     305        103
+       405 21/05/2023           9.00 am                     304        105
+
+_________________________________________________________________________________________________________________________________________
+
+7)Display the item details which has the maximum sales in the previous month
+
+
+_________________________________________________________________________________________________________________________________________
+
+8)Display the customer details who has placed order only once in a particular month
+
+__________________________________________________________________________________________________________________________________________ 
+
